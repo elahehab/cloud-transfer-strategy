@@ -225,7 +225,7 @@
 					//levels.push([10, 2, generateRandomNum(10, 14),this, 30, 10, 10, 0, distribution]);
 					//levels.push([10, 2, generateRandomNum(10, 15),this, 12, 10, 10, 0, distribution]);
 				} else {
-					for(var i = 0; i < 3; i++) {
+					for(var i = 0; i < 1; i++) {
 						levels.push([generateRandomNum(12, 15), partNum, generateRandomNum(12, 15), this, 20, 10, 10, 0, distribution]);
 					}
 				}
@@ -244,13 +244,12 @@
 			if (difficality == levels.length)
 			{
 				if(this.partNum == 1) {
-					continuePage = new ContinueNextLevelPage(0, 2);
-					
+					continuePage = new ContinueNextLevelPage(0, this.partNum, 2);
 				} else {
 					outputSaver.compareCurrAndBest();
 					var tf:Array = outputSaver.getPartTrueAndFalseAnsNum();
 					var score:Number = tf[0]/(tf[0] + tf[1]) * 100;
-					continuePage = new ContinueNextLevelPage(score, 1);
+					continuePage = new ContinueNextLevelPage(score, this.partNum, 1);
 				}
 				addChild(continuePage);
 				addEventListener(AgainClickedEvent.AGAIN_CLICKED, onAgainClicked);
@@ -269,7 +268,7 @@
 				this.score = 0;
 				this.numAllFault = 0;
 				this.numAllTrue = 0;
-			} else if(this.partNum < 7) {
+			} else {
 
 				var trueFalseNum:Array = outputSaver.getPartTrueAndFalseAnsNum();
 				var numPartTrue:int = trueFalseNum[0];
@@ -293,13 +292,14 @@
 				} else if((this.partNum == 5 || this.partNum == 6 || this.partNum == 7) && partCorrectPercent < 0.5) {
 					onContinueClickedFinish(e);
 					return;
+				} else if (this.partNum == 7) { 
+					onContinueClickedFinish(e);
+					return;
 				} else {
 					this.partNum++;
 				}
-			}  else {
-				onContinueClickedFinish(e);
-				return;
 			}
+			
 			this.levels = null;
 			this.difficality = 0;
 			trace("numAllTrue: " + this.numAllTrue + " numAllFault: " + this.numAllFault);
@@ -318,7 +318,7 @@
 		private function onContinueClickedFinish(e:ContinueClickedEvent):void {
 			sb.scoreBar._finishCounting();
 			var assetClass:Class = myLoader.contentLoaderInfo.applicationDomain.getDefinition("finishPage") as Class;
-			var finishP:* = new assetClass(sb.scoreBar._getScore(), numAllTrue / (numAllTrue + numAllFault) * 100, host);
+			var finishP:* = new assetClass(sb.scoreBar._getScore(), numAllTrue / (numAllTrue + numAllFault) * 100);
 
 			addChild(finishP);
 		}
