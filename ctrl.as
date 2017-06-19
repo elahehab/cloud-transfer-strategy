@@ -78,6 +78,7 @@
 		var continuePage:ContinueNextLevelPage;
 		
 		var showMode:Boolean = false;
+		var SHOW_GUIDE:Boolean = true;
 		var partNum:int = 1; //1: pre-test, n: n rainy clouds
 		
 		var outputSaver:BestOutputSaver;
@@ -220,19 +221,24 @@
 				levels = new Array();
 			
 				if(partNum == 1) {
-					levels.push([10, 1, generateRandomNum(10, 14),this, 20, 20, 10, 0 ,distribution]);
-					//levels.push([10, 1, generateRandomNum(10, 14),this, 20, 20, 10, 0, distribution]);
-					//levels.push([10, 2, generateRandomNum(10, 14),this, 30, 10, 10, 0, distribution]);
-					//levels.push([10, 2, generateRandomNum(10, 15),this, 12, 10, 10, 0, distribution]);
+					levels.push([10, 1, generateRandomNum(10, 14),this, 20, 20, 10, 0 ,distribution, false]);
+					//levels.push([10, 1, generateRandomNum(10, 14),this, 20, 20, 10, 0, distribution, false]);
+					//levels.push([10, 2, generateRandomNum(10, 14),this, 30, 10, 10, 0, distribution, false]);
+					//levels.push([10, 2, generateRandomNum(10, 15),this, 12, 10, 10, 0, distribution, false]);
 				} else {
-					for(var i = 0; i < 1; i++) {
-						levels.push([generateRandomNum(12, 15), partNum, generateRandomNum(12, 15), this, 20, 10, 10, 0, distribution]);
+					for(var i = 0; i < 10; i++) {
+						var showGuide:Boolean = false;
+						if(i < 5 && SHOW_GUIDE) {
+							showGuide = true;
+						}
+						levels.push([generateRandomNum(12, 15), partNum, generateRandomNum(12, 15), this, 20, 10, 10, 0, distribution, showGuide]);
 					}
 				}
 			}
 			currentLevel = new level(levels[difficality][0], levels[difficality][1], levels[difficality][2], 
 									 levels[difficality][3], levels[difficality][4], levels[difficality][5], 
-									 levels[difficality][6], levels[difficality][7], levels[difficality][8]);
+									 levels[difficality][6], levels[difficality][7], levels[difficality][8],
+									 levels[difficality][9]);
 			addChild(currentLevel);
 			currentLevel.startLevel();
 			sb.scoreBar._setMainLevel(difficality+1,levels.length);
@@ -246,8 +252,9 @@
 				if(this.partNum == 1) {
 					continuePage = new ContinueNextLevelPage(0, this.partNum, 2);
 				} else {
+					outputSaver.saveLevInfo();
 					outputSaver.compareCurrAndBest();
-					var tf:Array = outputSaver.getPartTrueAndFalseAnsNum();
+					var tf:Array = outputSaver.getBestPartTrueAndFalseAnsNum();
 					var score:Number = tf[0]/(tf[0] + tf[1]) * 100;
 					continuePage = new ContinueNextLevelPage(score, this.partNum, 1);
 				}
@@ -270,7 +277,7 @@
 				this.numAllTrue = 0;
 			} else {
 
-				var trueFalseNum:Array = outputSaver.getPartTrueAndFalseAnsNum();
+				var trueFalseNum:Array = outputSaver.getBestPartTrueAndFalseAnsNum();
 				var numPartTrue:int = trueFalseNum[0];
 				var numPartFault:int = trueFalseNum[1];
 				

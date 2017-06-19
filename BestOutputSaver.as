@@ -18,9 +18,9 @@
 			trace("num of lev infos: " + currPartLevInfos.length);
 		}
 		
-		private function writeBestToFile():void {
-			for(var i:int = 0; i < bestLevInfos.length; i++) {
-				var levInfo:levelInfo = bestLevInfos[i];
+		private function writeLevInfosToFile(levInfos:Array):void {
+			for(var i:int = 0; i < levInfos.length; i++) {
+				var levInfo:levelInfo = levInfos[i];
 				var dataStr:String = JSON.stringify(levInfo);
 				var file:File = File.desktopDirectory.resolvePath("CloudOutput\\" + m_ctrl.getUserEmailAddr() + ".txt");
 				var stream:FileStream = new FileStream();
@@ -28,6 +28,10 @@
 				stream.writeUTFBytes(dataStr + "\n");
 				stream.close();
 			}
+		}
+		
+		public function saveLevInfo():void {
+			writeLevInfosToFile(this.currPartLevInfos);
 		}
 		
 		public function compareCurrAndBest():void {
@@ -45,7 +49,6 @@
 			if(bestLevInfos.length == 0) {
 				bestLevInfos = currPartLevInfos;
 			}
-			this.writeBestToFile();
 			this.bestLevInfos = new Array();
 			this.currPartLevInfos = new Array();
 		}
@@ -74,7 +77,7 @@
 			return arr;
 		}
 		
-		public function getPartTrueAndFalseAnsNum():Array {
+		public function getBestPartTrueAndFalseAnsNum():Array {
 			return getArrTrueAndFalseAnsNum(bestLevInfos);
 		}
 		

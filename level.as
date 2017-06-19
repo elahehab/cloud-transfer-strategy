@@ -15,6 +15,8 @@
 	import flash.filesystem.FileStream;
 	import flash.filesystem.FileMode;
 	import flash.utils.clearInterval;
+	import flash.utils.setTimeout;
+	import flash.geom.Point;
 	
 	public class level extends MovieClip {
 		
@@ -24,7 +26,6 @@
 		var ansTime:int = 0;
 		var numTrue:int = 0;
 		var numClicked:int = 0;
-		var timer:Timer = new Timer(1000);
 		var levInfo:levelInfo = new levelInfo();
 		var numCoin:int = 0;
 		var m_score:int = 0;
@@ -45,10 +46,15 @@
 		var m_ctrl:ctrl = null;
 		public var distributionType:int = 0;/* 1-fullScreen 2-UpLEft 3-UpRight 4-DownLeft 5-DownRight 
 											 6-UP 7-Down 8-Right 9-Left*/
+											 
+		private var centerPnt:CenterPoint = new CenterPoint();
+		private var polygonAlpha:Number = 0.5;
+		private var showGuide:Boolean;
 		
 		public function level(_numNormalAbr:int,_numRainyAbr:int,_m_speed:Number,_ctrl:ctrl,
 							  _m_shetabKondShavande:Number,_m_maxGradian:Number,_m_changeGRadianTime,
-							  _m_distructorType:int,_distributionType:int/* 1-fullScreen 2-UpLEft 3-UpRight 4-DownLeft 5-DownRight*/) {
+							  _m_distructorType:int,_distributionType:int,/* 1-fullScreen 2-UpLEft 3-UpRight 4-DownLeft 5-DownRight*/
+							  _showGuide:Boolean) {
 			
 			distributionType = _distributionType;
 			m_ctrl = _ctrl;
@@ -63,6 +69,7 @@
 			m_shetabKondShavande = _m_shetabKondShavande;
 			
 			m_speed = _m_speed;
+			showGuide = _showGuide;
 			
 		}
 		
@@ -111,22 +118,19 @@
 			}
 			
 			//m_ctrl.sb.scoreBar.setNumCoin(numRainyAbr);
-			startt();
+			addCloudsToPage();
 			
 			intervalId = setInterval(saveMouseAndRainDim, 100);
 			
-			timer.start();
-			timer.addEventListener(TimerEvent.TIMER, harkat);
+			setTimeout(harkat, 1000); //start moving after 1 second
 			
 			/*eyeTracker.startTrack();
 			addChild(eyeTracker);
 			eyeTracker.addEventListener(EyeTrackerDataSentEvent.EYE_TRACKER_DATA, onEyeTrackerDataRecieved)*/
 		}
 		
-		public function harkat(e:TimerEvent):void
+		public function harkat():void
 		{
-			timer.removeEventListener(TimerEvent.TIMER, harkat);
-			
 			m_ctrl.soundChannelTempo120 = m_ctrl.musicAbr1.play();
 			
 			addEventListener(Event.ENTER_FRAME,loop);
@@ -144,6 +148,11 @@
 		public function loop(e:Event):void
 		{
 			count++;
+			
+			if(this.numRainyAbr > 1 && this.showGuide) {
+				drawPolygon();
+			}
+			
 			if(count == m_shetabKondShavande && ansTime==0)
 			{
 				count = 0;
@@ -301,10 +310,8 @@
 			}
 		}
 		
-		public function startt():void
+		public function addCloudsToPage():void
 		{
-			
-			timer.stop()
 			var randomLocation:Array=new Array();
 			for(var i:int=0;i<numRainyAbr;i++)
 			{
@@ -408,9 +415,56 @@
 				}
 			}
 		}
-		function timeOut():void
-		{
-
+		
+		private function drawPolygon():void {
+			this.graphics.clear();
+			if(this.contains(centerPnt)) {
+				removeChild(centerPnt);
+			}
+			
+			var from_X:int = 0;
+			var from_Y:int = 0;
+			var to_X:int = 0;
+			var to_Y:int = 0;
+			var points:Array = new Array();
+			
+			var center_x:int = 0;
+			var center_y:int = 0;
+			
+			for(var i:int = 0; i < vecAbrRainy.length; i++ ) {
+				points.push(new Point(vecAbrRainy[i].x, vecAbrRainy[i].y));
+				center_x += vecAbrRainy[i].x;
+				center_y += vecAbrRainy[i].y;
+			}
+			
+			center_x /= vecAbrRainy.length;
+			center_y /= vecAbrRainy.length;
+			centerPnt.x = center_x; centerPnt.y = center_y;
+			addChild(centerPnt);
+			
+			var order:Array = getPointsOrder(points);
+			this.graphics.lineStyle(0, 0, 0);
+			this.graphics.beginFill(0xFF9900, polygonAlpha);
+			this.graphics.moveTo(order[0].x, order[0].y);
+			for(i = 1; i < order.length; i++) {
+				to_X = order[i].x;
+				to_Y = order[i].y;
+				this.graphics.lineTo(to_X, to_Y);
+			}
+			this.graphics.lineTo(order[0].x, order[0].y);
+			centerPnt.alpha = polygonAlpha;
+			polygonAlpha -= 0.01/2;
+			if(polygonAlpha < 0) {
+				polygonAlpha = 0;
+			}
+		}
+		
+		private function getPointsOrder(inputArr:Array):Array {
+			return new ConvexHullHelper().GrahamScan(inputArr);
+		}
+		
+		private function calculateDist(x1:int, y1:int, x2:int, y2:int):int {
+			return Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
 		}
 		
 		function saveMouseAndRainDim():void {
