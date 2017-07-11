@@ -79,7 +79,7 @@
 		
 		var showMode:Boolean = false;
 		var SHOW_GUIDE:Boolean = true;
-		var partNum:int = 1; //1: pre-test, n: n rainy clouds
+		var partNum:int = 4; //1: pre-test, n: n rainy clouds
 		
 		var outputSaver:BestOutputSaver;
 
@@ -222,9 +222,9 @@
 			
 				if(partNum == 1) {
 					levels.push([10, 1, generateRandomNum(10, 14),this, 20, 20, 10, 0 ,distribution, false]);
-					//levels.push([10, 1, generateRandomNum(10, 14),this, 20, 20, 10, 0, distribution, false]);
-					//levels.push([10, 2, generateRandomNum(10, 14),this, 30, 10, 10, 0, distribution, false]);
-					//levels.push([10, 2, generateRandomNum(10, 15),this, 12, 10, 10, 0, distribution, false]);
+					levels.push([10, 1, generateRandomNum(10, 14),this, 20, 20, 10, 0, distribution, false]);
+					levels.push([10, 2, generateRandomNum(10, 14),this, 30, 10, 10, 0, distribution, false]);
+					levels.push([10, 2, generateRandomNum(10, 15),this, 12, 10, 10, 0, distribution, false]);
 				} else {
 					for(var i = 0; i < 10; i++) {
 						var showGuide:Boolean = false;

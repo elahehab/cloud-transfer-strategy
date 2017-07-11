@@ -17,6 +17,7 @@
 	import flash.utils.clearInterval;
 	import flash.utils.setTimeout;
 	import flash.geom.Point;
+	import flash.events.MouseEvent;
 	
 	public class level extends MovieClip {
 		
@@ -50,6 +51,7 @@
 		private var centerPnt:CenterPoint = new CenterPoint();
 		private var polygonAlpha:Number = 0.5;
 		private var showGuide:Boolean;
+		private var showGuideSelected:Boolean = false;
 		
 		public function level(_numNormalAbr:int,_numRainyAbr:int,_m_speed:Number,_ctrl:ctrl,
 							  _m_shetabKondShavande:Number,_m_maxGradian:Number,_m_changeGRadianTime,
@@ -71,6 +73,18 @@
 			m_speed = _m_speed;
 			showGuide = _showGuide;
 			
+			var showGuideBt:ShowGuideBt = new ShowGuideBt();
+			showGuideBt.x = 737;
+			showGuideBt.y = 540;
+			addChild(showGuideBt);
+			showGuideBt.addEventListener(MouseEvent.CLICK, onShowGuideClicked);
+		}
+		
+		private function onShowGuideClicked(e:MouseEvent):void {
+			this.showGuideSelected = !this.showGuideSelected;
+			if(this.showGuideSelected == false) {
+				this.graphics.clear();
+			}
 		}
 		
 		public function startLevel():void {
@@ -149,7 +163,12 @@
 		{
 			count++;
 			
-			if(this.numRainyAbr > 1 && this.showGuide) {
+			polygonAlpha -= 0.01/2;
+			if(polygonAlpha < 0) {
+				polygonAlpha = 0;
+			}
+			
+			if(this.numRainyAbr > 1 && this.showGuide && this.showGuideSelected) {
 				drawPolygon();
 			}
 			
@@ -444,7 +463,7 @@
 			
 			var order:Array = getPointsOrder(points);
 			this.graphics.lineStyle(0, 0, 0);
-			this.graphics.beginFill(0xFF9900, polygonAlpha);
+			this.graphics.beginFill(0x0D9DD9, polygonAlpha);
 			this.graphics.moveTo(order[0].x, order[0].y);
 			for(i = 1; i < order.length; i++) {
 				to_X = order[i].x;
@@ -453,10 +472,6 @@
 			}
 			this.graphics.lineTo(order[0].x, order[0].y);
 			centerPnt.alpha = polygonAlpha;
-			polygonAlpha -= 0.01/2;
-			if(polygonAlpha < 0) {
-				polygonAlpha = 0;
-			}
 		}
 		
 		private function getPointsOrder(inputArr:Array):Array {
