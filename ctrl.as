@@ -79,7 +79,7 @@
 		
 		var showMode:Boolean = false;
 		var SHOW_GUIDE:Boolean = true;
-		var partNum:int = 4; //1: pre-test, n: n rainy clouds
+		var partNum:int = 1; //1: pre-test, n: n rainy clouds
 		
 		var outputSaver:BestOutputSaver;
 

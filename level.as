@@ -72,12 +72,13 @@
 			
 			m_speed = _m_speed;
 			showGuide = _showGuide;
-			
-			var showGuideBt:ShowGuideBt = new ShowGuideBt();
-			showGuideBt.x = 737;
-			showGuideBt.y = 540;
-			addChild(showGuideBt);
-			showGuideBt.addEventListener(MouseEvent.CLICK, onShowGuideClicked);
+			if(numRainyAbr > 2 && showGuide) {
+				var showGuideBt:ShowGuideBt = new ShowGuideBt();
+				showGuideBt.x = 737;
+				showGuideBt.y = 540;
+				addChild(showGuideBt);
+				showGuideBt.addEventListener(MouseEvent.CLICK, onShowGuideClicked);
+			}
 		}
 		
 		private function onShowGuideClicked(e:MouseEvent):void {

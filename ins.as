@@ -15,6 +15,7 @@
 		
 		private var onStartFunction:Function;
 		private var emailTF:TextField = new TextField();
+		private var fileName:String;
 		
 		public function ins(_onStartFunction:Function) {
 			
@@ -81,11 +82,13 @@
 				return;
 			}
 			
-			var fileName:String = "CloudOutput\\" + emailTF.text + ".txt";
+			this.fileName = emailTF.text + "-" + getCurrDateAndTime();
+			trace("file name: " + fileName);
+			var filePath:String = "CloudOutput\\" + this.fileName + ".txt";
 			
-			var file:File = File.desktopDirectory.resolvePath(fileName);
+			var file:File = File.desktopDirectory.resolvePath(filePath);
 			var stream:FileStream = new FileStream();
-			trace(fileName);
+			trace(filePath);
 			stream.open(file, FileMode.APPEND);
 			stream.close();
 			
@@ -98,7 +101,23 @@
 		}
 		
 		public function getEmail():String {
-			return emailTF.text;
+			return this.fileName;
+		}
+		
+		private function getCurrDateAndTime():String {
+			var dateObj:Date = new Date();
+			var year:String = String(dateObj.getFullYear());
+			var month:String = String(dateObj.getMonth() + 1);
+			if (month.length == 1) {
+				month = "0"+month;
+			}
+			var date:String = String(dateObj.getDate());
+			if (date.length == 1) {
+				date = "0"+date;
+			}
+			var res:String = year + "-" + month + "-" +date;
+			res += "-" + dateObj.hours + "-" + dateObj.minutes + "-" + dateObj.seconds;
+			return res;
 		}
 	}
 	
